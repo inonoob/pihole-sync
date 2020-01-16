@@ -1,4 +1,4 @@
-# pihole-sync
+gadkarisid# pihole-sync
 
 ## Introduction
 This script is meant to keep 2 PiHole instances in sync. One node is designated as the master and the other node is the slave. 
@@ -13,6 +13,7 @@ The slave node will check the uploaded files and sync them if necceccary.
 - Copy pihole_sync.sh to the folder of your choice on both PiHole nodes. 
 - Update the options in the configuration section. 
 - Run script as pi user on the master PiHole
-- Run script as sudo user on the slave PiHole (bock list owned by root) 
-- create cronjob on Master as pi usergadkarisid
+- Run script as sudo user on the slave PiHole (bocklist owned by root) 
+- create cronjob on Master as pi user
 - create cronjob on Slave as root user 
+gadkarisid
