@@ -5,7 +5,7 @@ This script is meant to keep 2 PiHole instances in sync. One node is designated 
 This is a fork from gadkarisid pihole-sync repo. I just hacked it in an ugly way. But works for me :). 
 
 
-All maintenance (adding blocklists, adding entries to whitelist/blacklist/regex) should be done on the master node. The master node will upload thoses files connects to the Backup PiHole with scp Privat/Public key combination.  
+All maintenance (adding blocklists, adding entries to whitelist/blacklist/regex) should be done on the master node. The master node will upload those files connects to the Backup PiHole with scp Privat/Public key combination.  
 The slave node will check the uploaded files and sync them if necceccary. 
 
 ### Usage
