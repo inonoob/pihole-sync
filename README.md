@@ -1,4 +1,4 @@
-#gadkarisidPiHole-Sync
+gadkarisidgadkarisid
 
 ## Introduction
 This script is meant to keep 2 PiHole instances in sync. One node is designated as the master and the other node is the slave. 
