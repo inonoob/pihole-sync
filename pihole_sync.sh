@@ -5,7 +5,7 @@
 ###########################
 
 # Define PiHole node name
-node_name=pihole01
+node_name=PiHole
 
 # Designate whether this node is the 'master' or 'slave'
 node_type=master
@@ -14,15 +14,17 @@ node_type=master
 LOCAL_DIR=/etc/pihole
 
 # Remote Rsync directory
-REMOTE_DIR=/media/pihole_sync
+REMOTE_DIR=/home/pi/PiHole-list-sync
+
+# IP address of Slave PiHole
+
+IP_ADDR=xxx.xxx.xxx.xxx 
 
 ###########################
 #### END CONFIGURATION ####
 ###########################
 
 # Create initial syslog entry
-logger "pihole_sync: PiHole sync starting"
-logger "pihole_sync: Node name is" $node_name
 
 # If this is the master node
 if [[ $node_type == "master" ]]; then
@@ -33,22 +35,15 @@ if [[ $node_type == "master" ]]; then
 	# Sync specified files
 	for FILE in ${FILES[@]}
 	do
-        	# Check if the local file is newer than the remote file
-	        if [[ "$LOCAL_DIR/$FILE" -nt "$REMOTE_DIR/$FILE" ]]; then
-			logger "pihole_sync:" $FILE "will be synced"
-                	# If the local file is newer, then copy it to the remote location
-	                cp -u $LOCAL_DIR/$FILE $REMOTE_DIR/$FILE
-			logger "pihole_sync:" $FILE "has been copied"
-		else
-			logger "pihole_sync:" $FILE "does not need to be synced"
-	        fi
+		scp -i ~/.ssh/id_rsa $LOCAL_DIR/$FILE pi@$IP_ADDR:$REMOTE_DIR
+		sleep 5
 	done
 fi
 
 # If this is the slave node
 if [[ $node_type == "slave" ]]; then
 	# Pause while the master node completes its sync
-	sleep 45
+	sleep 180
 
 	logger "pihole_sync: Node type is slave"
 	# Files to sync
@@ -77,7 +72,6 @@ if [[ $node_type == "slave" ]]; then
 	        for FILE in ${FILES[@]}
 	        do
 	                cp -u $REMOTE_DIR/$FILE $LOCAL_DIR/$FILE
-					logger "pihole_sync:" $FILE "has been copied"
 	        done
 	fi
 	
@@ -88,9 +82,6 @@ if [[ $node_type == "slave" ]]; then
 	        if [[ "$REMOTE_DIR/$ADLISTS" -nt "$LOCAL_DIR/$ADLISTS" ]]; then
         	        # If the remote file is newer, then enable sync
                 	((SYNC2++))
-	                logger "pihole_sync:" $ADLIST "needs to be synced"
-        	else
-                	logger "pihole_sync:" $ADLIST "does not need to be synced"
 	        fi
 	done
 
@@ -99,17 +90,9 @@ if [[ $node_type == "slave" ]]; then
 	        for ADLISTS in ${ADLISTS[@]}
 	        do
 	                cp -u $REMOTE_DIR/$ADLISTS $LOCAL_DIR/$ADLISTS
-					logger "pihole_sync:" $ADLIST "has been copied"
 	        done
-	        logger "pihole_sync: Restarting DNS resolution"
 	        pihole restartdns
 	fi
 fi
-
-logger "pihole_sync: PiHole sync complete"
-
-# Send log file to remote directory
-grep "pihole_sync" /var/log/syslog > /home/pi/pihole_sync-$node_name.log
-sudo cp -u /home/pi/pihole_sync-$node_name.log $REMOTE_DIR/pihole_sync-$node_name.log
 
 exit 0
